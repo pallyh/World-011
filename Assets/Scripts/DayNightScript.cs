@@ -17,10 +17,15 @@ public class DayNightScript : MonoBehaviour
     float _dayTime;
     float _dayPhase;
 
+    private AudioSource _daySound;
+    private AudioSource _nightSound;
     void Start()
     {
         _sun = GameObject.Find("SunLight").GetComponent<Light>();
         _moon = GameObject.Find("MoonLight").GetComponent<Light>();
+        AudioSource[] audioSources = this.GetComponents<AudioSource>();
+        _daySound = audioSources[0];
+        _nightSound = audioSources[1];
     }
 
     // Update is called once per frame
@@ -37,6 +42,14 @@ public class DayNightScript : MonoBehaviour
         
         if (_dayPhase > 0.25f && _dayPhase < 0.75f)
         {
+            if (!_nightSound.isPlaying)
+            {
+                if (_daySound.isPlaying)
+                {
+                    _daySound.Stop();
+                }
+                _nightSound.Play();
+            }
             if (RenderSettings.skybox != nightSkybox)
             {
                 RenderSettings.skybox = nightSkybox;
@@ -46,6 +59,14 @@ public class DayNightScript : MonoBehaviour
         }
         else 
         {
+            if (!_daySound.isPlaying)
+            {
+                if (_nightSound.isPlaying)
+                {
+                    _nightSound.Stop();
+                }
+                _daySound.Play();
+            }
             if (RenderSettings.skybox != daySkybox)
             {
                 RenderSettings.skybox = daySkybox;
@@ -53,5 +74,17 @@ public class DayNightScript : MonoBehaviour
             RenderSettings.ambientIntensity = koef;
         }
         RenderSettings.skybox.SetFloat("_Exposure", 0.1f + koef * 0.9f);
+        SoundChanges();
+
+    }
+    public void SoundChanges()
+    {
+        //      MUTE
+        _daySound.mute = GameSetting.IsMuted;
+        _nightSound.mute = GameSetting.IsMuted;
+        //      CHANGE BACKGROUND VOLUME
+        _daySound.volume = GameSetting.BgValume;
+        _nightSound.volume = GameSetting.BgValume;
+
     }
 }

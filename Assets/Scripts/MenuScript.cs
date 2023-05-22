@@ -1,18 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuScript : MonoBehaviour
 {
-    // Start is called before the first frame update
     [SerializeField]
     private GameObject menuContent;
     void Start()
     {
-        
+        GameSetting.LoadSettings();
+        GameObject.Find("MuteToggle").GetComponent<Toggle>().isOn = GameSetting.IsMuted;
+        GameObject.Find("BackgSlide").GetComponent<Slider>().value = GameSetting.BgValume;
+
+        Time.timeScale = menuContent.activeInHierarchy ? 0.0f : 1.0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyUp(KeyCode.Escape))
@@ -21,5 +25,15 @@ public class MenuScript : MonoBehaviour
             menuContent.SetActive(!menuContent.activeInHierarchy);
             
         }
+    }
+
+    public void MuteChanges(bool state)
+    {
+        /*Debug.Log(state);*/
+        GameSetting.IsMuted = state;
+    }
+    public void BgVolumeChanges(Single value)
+    {
+        GameSetting.BgValume = value;
     }
 }
